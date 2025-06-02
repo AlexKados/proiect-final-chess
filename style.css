@@ -1,0 +1,36 @@
+* /* =========================
+   Reset minim pentru browser
+   ========================= */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* =========================
+   Body & Layout general
+   ========================= */
+body {
+  background-color: #f7f7f7;
+  font-family: Arial, sans-serif;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+/* =========================
+   Titluri
+   ========================= */
+h1 {
+  margin-bottom: 16px;
+  font-size: 32px;
+}
+
+h2 {
+  margin-top: 12px;
+  margin-bottom: 4px;
+  font-size: 20px;
+  color: #444;
+}
