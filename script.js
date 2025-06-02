@@ -595,3 +595,79 @@ class ChessGame {
         }
     }
 }
+
+function updatePlayerNames() {
+
+    let p1 = document.getElementById('player1')?.value || 'Jucător 1';
+    let p2 = document.getElementById('player2')?.value || 'Jucător 2';
+
+
+    game.playerNames.white = p1;
+    game.playerNames.black = p2;
+    game.updatePlayerDisplay();
+}
+
+function resetBoard() {
+
+    game.resetGame();
+}
+
+function changeBoardSize() {
+    // 1) Citim noua dimensiune (480 sau 600)
+    let newSize = parseInt(document.getElementById('boardSize')?.value) || boardSize;
+    boardSize = newSize;
+
+
+    resizeCanvas(boardSize, boardSize);
+
+}
+
+function changeBoardColor() {
+
+    let sel = document.getElementById('colorSelect')?.value || 'whiteBlack';
+
+
+    if (sel === 'whiteBlack') {
+        lightColor = '#ffffff';
+        darkColor = '#000000';
+    } else if (sel === 'blueGray') {
+        lightColor = '#add8e6';
+        darkColor = '#708090';
+    } else if (sel === 'redYellow') {
+        lightColor = '#ffeb99';
+        darkColor = '#8b0000';
+    }
+
+}
+
+
+
+function setup() {
+
+    canvas = createCanvas(boardSize, boardSize);
+    canvas.parent('canvasContainer');
+
+
+    game = new ChessGame();
+
+
+    document.getElementById('setNamesBtn')?.addEventListener('click', updatePlayerNames);
+    document.getElementById('resetBtn')?.addEventListener('click', resetBoard);
+    document.getElementById('boardSize')?.addEventListener('change', changeBoardSize);
+    document.getElementById('colorSelect')?.addEventListener('change', changeBoardColor);
+    document.getElementById('gameMode')?.addEventListener('change', () => {
+        game.gameMode = document.getElementById('gameMode')?.value || 'human';
+    });
+}
+
+function draw() {
+
+    game.draw();
+}
+
+function mouseClicked() {
+
+    if (mouseX >= 0 && mouseX <= width && mouseY >= 0 && mouseY <= height) {
+        game.handleClick(mouseX, mouseY);
+    }
+}
