@@ -1,15 +1,10 @@
-* /* =========================
-   Reset minim pentru browser
-   ========================= */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* =========================
-   Body & Layout general
-   ========================= */
+
 body {
   background-color: #f7f7f7;
   font-family: Arial, sans-serif;
@@ -20,9 +15,7 @@ body {
   padding: 20px;
 }
 
-/* =========================
-   Titluri
-   ========================= */
+
 h1 {
   margin-bottom: 16px;
   font-size: 32px;
@@ -33,4 +26,75 @@ h2 {
   margin-bottom: 4px;
   font-size: 20px;
   color: #444;
+}
+
+/* =========================
+   Containerul controalelor de sus
+   ========================= */
+#controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 20px;
+  background-color: #ffffff;
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 900px;
+}
+
+/* =========================
+   Stilizare input-uri, select și butoane
+   ========================= */
+#controls input[type="text"],
+#controls select {
+  padding: 6px 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  transition: border-color 0.2s;
+}
+
+#controls input[type="text"]:focus,
+#controls select:focus {
+  outline: none;
+  border-color: #4a90e2;
+}
+
+
+#controls button {
+  padding: 6px 14px;
+  font-size: 16px;
+  background-color: #4a90e2;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#controls button:hover {
+  background-color: #417ad1;
+}
+
+
+#controls label {
+  font-size: 16px;
+  margin-right: 4px;
+  color: #555;
+}
+
+
+#playerDisplay,
+#turnDisplay {
+  font-size: 18px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  width: 100%;
+  max-width: 900px;
+  text-align: center;
+  color: #fffefe;
 }
