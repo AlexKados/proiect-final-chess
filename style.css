@@ -98,3 +98,43 @@ h2 {
   text-align: center;
   color: #fffefe;
 }
+
+
+#canvasContainer {
+  background-color: #ffffff;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  margin-top: 12px;
+}
+
+#canvasContainer {
+  background-color: #ffffff;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  margin-top: 12px;
+}
+
+
+canvas {
+  display: block;
+  border-radius: 4px;
+}
+
+
+canvas+* {
+  margin-top: 8px;
+}
+
+
+body {
+  background-image: url('chess.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  color: white;
+  font-family: Arial, sans-serif;
+}
