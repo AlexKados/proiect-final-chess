@@ -264,3 +264,334 @@ class ChessBoard {
         return newBoard;
     }
 }
+
+class ChessGame {
+    constructor() {
+        // 1) Creăm o nouă tablă
+        this.board = new ChessBoard();
+
+        // 2) Inițial nicio piesă nu e selectată, nicio mutare validă nu e calculată
+        this.selectedPiece = null;
+        this.validMoves = [];
+
+        // 3) Alb începe întotdeauna
+        this.currentTurn = 'white';
+
+        // 4) Citim modul de joc din UI (dacă există)
+        this.gameMode = document.getElementById('gameMode')?.value || 'human';
+
+        // 5) Citim numele jucătorilor (dacă există, altfel defaulturi)
+        this.playerNames = {
+            white: document.getElementById('player1')?.value || 'Jucător 1',
+            black: document.getElementById('player2')?.value || 'Jucător 2'
+        };
+
+        // 6) Actualizăm afișajele din HTML
+        this.updatePlayerDisplay();
+        this.updateTurnDisplay();
+    }
+
+    // Actualizează “Jucători: Alb vs Negru”
+    updatePlayerDisplay() {
+        let pd = document.getElementById('playerDisplay');
+        if (!pd) return;
+        pd.innerText = `Jucători: ${this.playerNames.white} vs ${this.playerNames.black}`;
+    }
+
+    // Actualizează “Runda: <nume> (<culoare>)”
+    updateTurnDisplay() {
+        let td = document.getElementById('turnDisplay');
+        if (!td) return;
+        let txt =
+            this.currentTurn === 'white'
+                ? `${this.playerNames.white} (Alb)`
+                : `${this.playerNames.black} (Negru)`;
+        td.innerText = `Runda: ${txt}`;
+    }
+
+    // Resetează jocul complet
+    resetGame() {
+        // 1) Resetăm tabla la poziția inițială
+        this.board.setupBoard();
+
+        // 2) Nicio piesă nu e selectată, nici mutări valide
+        this.selectedPiece = null;
+        this.validMoves = [];
+
+        // 3) Alb începe din nou
+        this.currentTurn = 'white';
+
+        // 4) Luăm iar valorile din UI (nume, modul de joc)
+        this.gameMode = document.getElementById('gameMode')?.value || 'human';
+        this.playerNames.white = document.getElementById('player1')?.value || 'Jucător 1';
+        this.playerNames.black = document.getElementById('player2')?.value || 'Jucător 2';
+
+        // 5) Actualizăm afișajele HTML
+        this.updatePlayerDisplay();
+        this.updateTurnDisplay();
+    }
+
+    // Desenează tabla, piesele și mutările valide
+    draw() {
+        clear();
+
+        // 1) Recalculăm dimensiunea pătratului conform canvas-ului
+        this.board.sqSize = width / this.board.cols;
+
+        // 2) Desenăm tabla
+        this.board.drawBoard();
+
+        // 3) Dacă există piesă selectată, evidențiem mutările valide
+        if (this.selectedPiece) {
+            // Pătrate verzi semi-transparente
+            fill(0, 255, 0, 100);
+            for (let mv of this.validMoves) {
+                rect(
+                    mv.col * this.board.sqSize,
+                    mv.row * this.board.sqSize,
+                    this.board.sqSize,
+                    this.board.sqSize
+                );
+            }
+            // Pătrat galben semi-transparent pe piesa selectată
+            fill(255, 255, 0, 150);
+            rect(
+                this.selectedPiece.col * this.board.sqSize,
+                this.selectedPiece.row * this.board.sqSize,
+                this.board.sqSize,
+                this.board.sqSize
+            );
+        }
+
+
+        this.board.drawPieces();
+
+
+        this.updateTurnDisplay();
+    }
+
+
+    handleClick(mouseX, mouseY) {
+        let col = floor(mouseX / this.board.sqSize);
+        let row = floor(mouseY / this.board.sqSize);
+        if (!this.board.isValidCell(row, col)) return;
+
+        let clickedPiece = this.board.getPiece(row, col);
+
+
+        if (this.selectedPiece) {
+
+            if (this.validMoves.some(m => m.row === row && m.col === col)) {
+
+                let opponentColor = this.currentTurn === 'white' ? 'black' : 'white';
+
+
+                this.board.movePiece(this.selectedPiece, row, col);
+                this.selectedPiece = null;
+                this.validMoves = [];
+
+
+                this.currentTurn = opponentColor;
+                this.updateTurnDisplay();
+
+
+                if (this.isInCheck(opponentColor) && !this.hasAnyLegalMove(opponentColor)) {
+                    alert(`ȘAH-MAT! ${opponentColor === 'white' ? this.playerNames.white : this.playerNames.black} a pierdut.`);
+                    return;
+                }
+
+
+                if (this.gameMode !== 'human' && this.currentTurn === 'black') {
+                    if (this.gameMode === 'computer-easy') {
+                        setTimeout(() => this.computerEasyMove(), 300);
+                    } else if (this.gameMode === 'computer-moderate') {
+                        setTimeout(() => this.computerModerateMove(), 300);
+                    }
+                }
+                return;
+            }
+
+            else {
+                if (clickedPiece && clickedPiece.color === this.currentTurn) {
+                    this.selectedPiece = clickedPiece;
+                    this.validMoves = this.filterLegalMoves(clickedPiece);
+                } else {
+
+                    this.selectedPiece = null;
+                    this.validMoves = [];
+                }
+            }
+        }
+
+        else {
+
+            if (clickedPiece && clickedPiece.color === this.currentTurn) {
+                this.selectedPiece = clickedPiece;
+                this.validMoves = this.filterLegalMoves(clickedPiece);
+            }
+        }
+    }
+
+
+    filterLegalMoves(piece) {
+        let legal = [];
+        let rawMoves = piece.getValidMoves(this.board);
+        for (let mv of rawMoves) {
+
+            let tmpBoard = this.board.clone();
+
+            let tmpPiece = tmpBoard.getPiece(piece.row, piece.col);
+
+            tmpBoard.movePiece(tmpPiece, mv.row, mv.col);
+
+            if (!this.isInCheckAfterMove(tmpBoard, piece.color)) {
+                legal.push(mv);
+            }
+        }
+        return legal;
+    }
+
+
+    isInCheck(color) {
+        return this.isInCheckAfterMove(this.board, color);
+    }
+
+
+    isInCheckAfterMove(boardToCheck, color) {
+
+        let kingRow = -1, kingCol = -1;
+        for (let r = 0; r < 8; r++) {
+            for (let c = 0; c < 8; c++) {
+                let p = boardToCheck.getPiece(r, c);
+                if (p && p.type === 'K' && p.color === color) {
+                    kingRow = r; kingCol = c;
+                    break;
+                }
+            }
+            if (kingRow !== -1) break;
+        }
+        if (kingRow === -1) {
+
+            return true;
+        }
+
+        let opponentColor = (color === 'white' ? 'black' : 'white');
+        for (let r = 0; r < 8; r++) {
+            for (let c = 0; c < 8; c++) {
+                let p = boardToCheck.getPiece(r, c);
+                if (p && p.color === opponentColor) {
+                    let raw = p.getValidMoves(boardToCheck);
+
+                    for (let mv of raw) {
+                        if (mv.row === kingRow && mv.col === kingCol) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+
+    hasAnyLegalMove(color) {
+        for (let r = 0; r < 8; r++) {
+            for (let c = 0; c < 8; c++) {
+                let p = this.board.getPiece(r, c);
+                if (p && p.color === color) {
+                    let legal = this.filterLegalMoves(p);
+                    if (legal.length > 0) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    computerEasyMove() {
+        let allLegal = [];
+
+        for (let r = 0; r < this.board.rows; r++) {
+            for (let c = 0; c < this.board.cols; c++) {
+                let piece = this.board.getPiece(r, c);
+                if (piece && piece.color === 'black') {
+                    let legal = this.filterLegalMoves(piece);
+                    for (let mv of legal) {
+                        allLegal.push({ pieceRow: r, pieceCol: c, destRow: mv.row, destCol: mv.col });
+                    }
+                }
+            }
+        }
+
+        if (allLegal.length === 0) {
+            alert(`ȘAH-MAT! ${this.playerNames.black} a pierdut.`);
+            return;
+        }
+
+        let chosen = random(allLegal);
+        let p = this.board.getPiece(chosen.pieceRow, chosen.pieceCol);
+        this.board.movePiece(p, chosen.destRow, chosen.destCol);
+
+
+        this.currentTurn = 'white';
+        this.updateTurnDisplay();
+
+
+        if (this.isInCheck('white') && !this.hasAnyLegalMove('white')) {
+            alert(`ȘAH-MAT! ${this.playerNames.white} a pierdut.`);
+            return;
+        }
+    }
+
+
+    computerModerateMove() {
+        let captureMoves = [];
+        let otherMoves = [];
+
+        for (let r = 0; r < this.board.rows; r++) {
+            for (let c = 0; c < this.board.cols; c++) {
+                let piece = this.board.getPiece(r, c);
+                if (piece && piece.color === 'black') {
+                    let legal = this.filterLegalMoves(piece);
+                    for (let mv of legal) {
+
+                        let target = this.board.getPiece(mv.row, mv.col);
+                        if (target) {
+
+                            captureMoves.push({ pieceRow: r, pieceCol: c, destRow: mv.row, destCol: mv.col });
+                        } else {
+                            otherMoves.push({ pieceRow: r, pieceCol: c, destRow: mv.row, destCol: mv.col });
+                        }
+                    }
+                }
+            }
+        }
+
+        let chosen;
+        if (captureMoves.length > 0) {
+
+            chosen = random(captureMoves);
+        } else if (otherMoves.length > 0) {
+
+            chosen = random(otherMoves);
+        } else {
+
+            alert(`ȘAH-MAT! ${this.playerNames.black} a pierdut.`);
+            return;
+        }
+
+
+        let p = this.board.getPiece(chosen.pieceRow, chosen.pieceCol);
+        this.board.movePiece(p, chosen.destRow, chosen.destCol);
+
+
+        this.currentTurn = 'white';
+        this.updateTurnDisplay();
+
+
+        if (this.isInCheck('white') && !this.hasAnyLegalMove('white')) {
+            alert(`ȘAH-MAT! ${this.playerNames.white} a pierdut.`);
+            return;
+        }
+    }
+}
