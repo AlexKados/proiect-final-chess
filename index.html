@@ -9,51 +9,58 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/p5@1.11.7/lib/p5.min.js"></script>
 </head>
+
 <body>
-  <h1>Chess-Game</h1>
+    <h1>Chess-Game</h1>
 
 
-  <div id="controls">
-    <!-- 1) Introducerea numelor jucătorilor -->
-    <div id="playerNames">
-      <input type="text" id="player1" placeholder="Nume Jucător 1">
-      <input type="text" id="player2" placeholder="Nume Jucător 2">
-      <button id="setNamesBtn">Setează Numele</button>
+    <div id="controls">
+        <!-- 1) Introducerea numelor jucătorilor -->
+        <div id="playerNames">
+            <input type="text" id="player1" placeholder="Nume Jucător 1">
+            <input type="text" id="player2" placeholder="Nume Jucător 2">
+            <button id="setNamesBtn">Setează Numele</button>
+        </div>
+
+        <!-- 2) Buton pentru resetarea tablei -->
+        <button id="resetBtn">Resetează Tabla</button>
+
+        <!-- 3) Alegerea dimensiunii tablei -->
+        <div id="sizeControl">
+            <label for="boardSize">Dimensiune tablă:</label>
+            <select id="boardSize">
+                <option value="480">Normala (480×480)</option>
+                <option value="600">Mare (600×600)</option>
+            </select>
+        </div>
+
+        <!-- 4) Alegerea culorilor tablei -->
+        <div id="colorControl">
+            <label for="colorSelect">Culori tablă:</label>
+            <select id="colorSelect">
+                <option value="whiteBlack">Alb/Negru</option>
+                <option value="blueGray">Albastru/Gri</option>
+                <option value="redYellow">Roșu închis/Galben deschis</option>
+            </select>
+        </div>
+
+        <!-- 5) Alegerea modului de joc -->
+        <div id="modeControl">
+            <label for="gameMode">Mod joc:</label>
+            <select id="gameMode">
+                <option value="human">Human vs Human</option>
+                <option value="computer-easy">Human vs Computer (Easy)</option>
+                <option value="computer-moderate">Human vs Computer (Moderate)</option>
+            </select>
+        </div>
     </div>
 
-    <!-- 2) Buton pentru resetarea tablei -->
-    <button id="resetBtn">Resetează Tabla</button>
+    <h2 id="playerDisplay">Jucători: – vs –</h2>
+    <div id="turnDisplay">Runda: –</div>
 
-    <!-- 3) Alegerea dimensiunii tablei -->
-    <div id="sizeControl">
-      <label for="boardSize">Dimensiune tablă:</label>
-      <select id="boardSize">
-        <option value="480">Normala (480×480)</option>
-        <option value="600">Mare   (600×600)</option>
-      </select>
-    </div>
+    <div id="canvasContainer"></div>
 
-    <!-- 4) Alegerea culorilor tablei -->
-    <div id="colorControl">
-      <label for="colorSelect">Culori tablă:</label>
-      <select id="colorSelect">
-        <option value="whiteBlack">Alb/Negru</option>
-        <option value="blueGray">Albastru/Gri</option>
-        <option value="redYellow">Roșu închis/Galben deschis</option>
-      </select>
-    </div>
+    <script src="script.js"></script>
+</body>
 
-    <!-- 5) Alegerea modului de joc -->
-    <div id="modeControl">
-      <label for="gameMode">Mod joc:</label>
-      <select id="gameMode">
-        <option value="human">Human vs Human</option>
-        <option value="computer-easy">Human vs Computer (Easy)</option>
-        <option value="computer-moderate">Human vs Computer (Moderate)</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Afișare nume jucători & tur curent -->
-  <h2 id="playerDisplay">Jucători: – vs –</h2>
-  <div id="turnDisplay">Runda: –</div>
+</html>
