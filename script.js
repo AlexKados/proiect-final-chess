@@ -135,3 +135,132 @@ class ChessPiece {
         return moves;
     }
 }
+
+class ChessBoard {
+    constructor() {
+        this.rows = 8;
+        this.cols = 8;
+        this.grid = [];
+        this.sqSize = 80;
+        this.setupBoard();
+    }
+
+    setupBoard() {
+        this.grid = [];
+        for (let r = 0; r < this.rows; r++) {
+            this.grid[r] = [];
+            for (let c = 0; c < this.cols; c++) {
+                this.grid[r][c] = null;
+            }
+        }
+
+        const backRankBlack = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'];
+        for (let c = 0; c < this.cols; c++) {
+            this.grid[0][c] = new ChessPiece(backRankBlack[c], 'black', 0, c);
+            this.grid[1][c] = new ChessPiece('P', 'black', 1, c);
+        }
+
+        for (let c = 0; c < this.cols; c++) {
+            this.grid[6][c] = new ChessPiece('P', 'white', 6, c);
+        }
+        const backRankWhite = ['R', 'N', 'B', 'Q', 'K', 'B', 'N', 'R'];
+        for (let c = 0; c < this.cols; c++) {
+            this.grid[7][c] = new ChessPiece(backRankWhite[c], 'white', 7, c);
+        }
+    }
+
+    drawBoard() {
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                if ((r + c) % 2 === 0) {
+                    fill(lightColor);
+                } else {
+                    fill(darkColor);
+                }
+                stroke(0);
+                rect(c * this.sqSize, r * this.sqSize, this.sqSize, this.sqSize);
+            }
+        }
+    }
+
+    drawPieces() {
+        for (let r = 0; r < this.rows; r++) {
+            for (let c = 0; c < this.cols; c++) {
+                let piece = this.grid[r][c];
+                if (piece) {
+                    piece.draw(this.sqSize);
+                }
+            }
+        }
+    }
+
+    isValidCell(row, col) {
+        return row >= 0 && row < this.rows && col >= 0 && col < this.cols;
+    }
+
+    getPiece(row, col) {
+        if (!this.isValidCell(row, col)) return null;
+        return this.grid[row][col];
+    }
+
+    isEmpty(row, col) {
+        return this.getPiece(row, col) == null;
+    }
+
+    movePiece(piece, newRow, newCol) {
+        this.grid[piece.row][piece.col] = null;
+
+        let captured = this.getPiece(newRow, newCol);
+        if (captured) {
+        }
+
+        piece.row = newRow;
+        piece.col = newCol;
+        this.grid[newRow][newCol] = piece;
+
+        if (piece.type === 'P' && (newRow === 0 || newRow === 7)) {
+            piece.type = 'Q';
+        }
+    }
+
+    getLinearMoves(piece, directions) {
+        let moves = [];
+        for (let [dr, dc] of directions) {
+            let r = piece.row;
+            let c = piece.col;
+            while (true) {
+                r += dr;
+                c += dc;
+                if (!this.isValidCell(r, c)) break;
+                let target = this.getPiece(r, c);
+                if (!target) {
+                    moves.push({ row: r, col: c });
+                } else {
+                    if (target.color !== piece.color) {
+                        moves.push({ row: r, col: c });
+                    }
+                    break;
+                }
+            }
+        }
+        return moves;
+    }
+
+    clone() {
+        let newBoard = new ChessBoard();
+        for (let r = 0; r < 8; r++) {
+            for (let c = 0; c < 8; c++) {
+                newBoard.grid[r][c] = null;
+            }
+        }
+        for (let r = 0; r < 8; r++) {
+            for (let c = 0; c < 8; c++) {
+                let piece = this.grid[r][c];
+                if (piece) {
+                    newBoard.grid[r][c] = new ChessPiece(piece.type, piece.color, r, c);
+                }
+            }
+        }
+        return newBoard;
+    }
+}
